@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hyprland Cheatsheet</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>⌨️ Hyprland – Keybindings</h1>
+    <input id="search" placeholder="Rechercher un raccourci…" />
+  </header>
+
+  <main id="content"></main>
+
+  <script>
+    const md = "# ⌨️ Hyprland – Pense-bête\n\n## 🪟 Fenêtres\n\n| Raccourci | Action |\n|---|---|\n| `SUPER_SHIFT + Q` |  |\n| `SUPER + TAB` | 1 |\n| `CTRL + right` | 50 0 |\n| `CTRL + left` | -50 0 |\n| `CTRL + up` | 0 -50 |\n\n## 🌐 Applications\n\n| Raccourci | Action |\n|---|---|\n| `SUPER + RETURN` | foot |\n| `ALT + F` | firefox |\n| `ALT + D` | flatpak run dev.vencord.Vesktop |\n| `ALT + S` | steam |\n| `ALT + U` | env QT_QPA_PLATFORM |\n| `ALT + A` | wofi --show |\n| `ALT + N` | ~/Apps/Ankama_Launcher.AppImage |\n| `ALT + R` | ~/hdd1/renpy-8.4.1-sdk/renpy.sh |\n| `ALT + M` | mongodb-compass |\n| `SUPER + H` | node ~/.config/hypr/cheatsheet/generate.js && xdg-open ~/.config/hypr/cheatsheet/keybinds.html |\n\n## 🎵 Multimédia\n\n| Raccourci | Action |\n|---|---|\n| `SUPER + M` | ~/wof_mpvctl |\n| `SUPER + SPACE` | echo '{ \"command\": [\"cycle\", \"pause\"] }' | socat - \"/tmp/mpvsoso\" |\n\n## 🗂️ Workspaces\n\n| Raccourci | Action |\n|---|---|\n| `SUPER + 1` | 1 |\n| `SUPER + 2` | 2 |\n\n## 🖱️ Souris\n\n| Raccourci | Action |\n|---|---|\n| `SUPER + mouse:272` | movewindow |\n| `SUPER + mouse:273` | resizeactive |\n\n";
+    document.getElementById("content").innerHTML = marked.parse(md);
+
+    document.getElementById("search").addEventListener("input", e => {
+      const q = e.target.value.toLowerCase();
+      document.querySelectorAll("tr").forEach(tr => {
+        tr.style.display = tr.innerText.toLowerCase().includes(q)
+          ? ""
+          : "none";
+      });
+    });
+  </script>
+</body>
+</html>

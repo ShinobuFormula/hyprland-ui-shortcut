@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hyprland Cheatsheet</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>⌨️ Hyprland – Keybindings</h1>
+    <input id="search" placeholder="Rechercher un raccourci…" />
+  </header>
+
+  <main id="content"></main>
+
+  <script>
+    const md = {{CONTENT}};
+    document.getElementById("content").innerHTML = marked.parse(md);
+
+    document.getElementById("search").addEventListener("input", e => {
+      const q = e.target.value.toLowerCase();
+      document.querySelectorAll("tr").forEach(tr => {
+        tr.style.display = tr.innerText.toLowerCase().includes(q)
+          ? ""
+          : "none";
+      });
+    });
+  </script>
+</body>
+</html>

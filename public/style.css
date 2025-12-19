@@ -1,0 +1,28 @@
+body {
+  background: #0f1115;
+  color: #e6e6e6;
+  font-family: system-ui;
+  padding: 2rem;
+  max-width: 500px;
+}
+
+label {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+input {
+  width: 100%;
+  padding: .5rem;
+  background: #161a22;
+  border: 1px solid #333;
+  color: #fff;
+}
+
+button {
+  padding: .6rem 1rem;
+  background: #5e81ac;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+}

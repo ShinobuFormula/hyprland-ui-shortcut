@@ -1,0 +1,43 @@
+body {
+  font-family: system-ui, sans-serif;
+  background: #0f1115;
+  color: #e6e6e6;
+  margin: 0;
+}
+
+header {
+  padding: 1rem 2rem;
+  background: #161a22;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+input {
+  flex: 1;
+  padding: .5rem;
+  background: #0f1115;
+  border: 1px solid #333;
+  color: #fff;
+}
+
+main {
+  padding: 2rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+}
+
+th, td {
+  border-bottom: 1px solid #222;
+  padding: .5rem;
+}
+
+code {
+  background: #1e2230;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
