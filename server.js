@@ -3,21 +3,48 @@ const fs = require("fs");
 const path = require("path");
 const url = require("url");
 
-// Stockage simple des binds CRUD en mémoire (ou JSON sur disque)
-const BINDS_FILE = path.resolve(__dirname, "binds.json");
+// Plus de binds.json, tout se fait dans binds.generated.conf
+const GENERATED_CONF = path.resolve(__dirname, "binds.generated.conf");
 
 // Chemin du Hyprland conf original
 const ORIGINAL_CONF = path.resolve(process.env.HOME, ".config/hypr/hyprland.conf");
 
 // Fonction utilitaire pour lire les binds CRUD
 function readBinds() {
-  if (!fs.existsSync(BINDS_FILE)) return [];
-  return JSON.parse(fs.readFileSync(BINDS_FILE, "utf-8"));
+  if (!fs.existsSync(GENERATED_CONF)) return [];
+  const lines = fs.readFileSync(GENERATED_CONF, "utf-8").split("\n");
+  return lines
+    .map(line => {
+      const match = line.match(/^bind\s*=\s*(.*?),\s*(.*?),\s*(.*?),\s*(.*)$/);
+      if (match) {
+        return {
+          mod: match[1],
+          key: match[2],
+          action: match[3],
+          cmd: match[4],
+          id: Buffer.from(`${match[1]},${match[2]},${match[3]},${match[4]}`).toString('base64'),
+          shortcut: `${match[1]}, ${match[2]}`,
+          command: match[4],
+          name: ""
+        };
+      }
+      return null;
+    })
+    .filter(Boolean);
 }
 
 // Fonction utilitaire pour écrire les binds CRUD
 function writeBinds(binds) {
-  fs.writeFileSync(BINDS_FILE, JSON.stringify(binds, null, 2));
+  const lines = binds.map(b => {
+    if (b.shortcut && b.command) {
+      const parts = b.shortcut.split(",").map(s => s.trim());
+      const mod = parts[0] || "";
+      const key = parts[1] || "";
+      return `bind = ${mod}, ${key}, exec, ${b.command}`;
+    }
+    return `bind = ${b.mod || ""}, ${b.key || ""}, ${b.action || "exec"}, ${b.cmd || ""}`;
+  });
+  fs.writeFileSync(GENERATED_CONF, lines.join("\n"));
 }
 
 // Lire binds du .conf original (readonly)
