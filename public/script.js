@@ -83,12 +83,62 @@ async function loadBinds() {
   });
 }
 
+// Charger les catégories et remplir le select
+async function loadCategories() {
+  const res = await fetch("/api/categories");
+  const categories = await res.json();
+  const select = document.getElementById("category");
+  select.innerHTML = "";
+  categories.forEach(cat => {
+    const option = document.createElement("option");
+    option.value = cat.id;
+    option.textContent = `${cat.emoji} ${cat.name}`;
+    select.appendChild(option);
+  });
+}
+
 // Refresh complet de la table (readonly + CRUD)
 async function refreshTable() {
   const tbody = document.querySelector("#bind-table tbody");
   tbody.innerHTML = "";
   await loadOriginalBinds();
-  await loadBinds();
+  const resBinds = await fetch("/api/binds");
+  const binds = await resBinds.json();
+  const resCats = await fetch("/api/categories");
+  const categories = await resCats.json();
+  // Grouper les binds par catégorie
+  const bindsByCat = {};
+  categories.forEach(cat => { bindsByCat[cat.id] = []; });
+  binds.forEach(b => {
+    if (b.category && bindsByCat[b.category]) {
+      bindsByCat[b.category].push(b);
+    } else {
+      // Catégorie inconnue ou absente
+      if (!bindsByCat["other"]) bindsByCat["other"] = [];
+      bindsByCat["other"].push(b);
+    }
+  });
+  // Affichage par catégorie
+  categories.forEach(cat => {
+    if (!bindsByCat[cat.id] || !bindsByCat[cat.id].length) return;
+    const trCat = document.createElement("tr");
+    trCat.className = "category-row";
+    trCat.innerHTML = `<td colspan="4"><span style="font-size:1.2em">${cat.emoji}</span> <b>${cat.name}</b></td>`;
+    tbody.appendChild(trCat);
+    bindsByCat[cat.id].forEach(b => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${b.name}</td>
+        <td>${b.shortcut}</td>
+        <td>${b.command}</td>
+        <td>
+          <button onclick="editBind('${b.id}')">✏️</button>
+          <button onclick="deleteBind('${b.id}')">🗑️</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  });
 }
 
 // CRUD : Edit
@@ -99,6 +149,7 @@ window.editBind = async function(id) {
   document.getElementById("name").value = bind.name;
   document.getElementById("shortcut").value = bind.shortcut;
   document.getElementById("command").value = bind.command;
+  document.getElementById("category").value = bind.category || "";
   document.getElementById("cancel").style.display = "inline";
 };
 
@@ -116,7 +167,8 @@ document.getElementById("bind-form").onsubmit = async function(e) {
     id,
     name: document.getElementById("name").value,
     shortcut: document.getElementById("shortcut").value,
-    command: document.getElementById("command").value
+    command: document.getElementById("command").value,
+    category: document.getElementById("category").value
   };
   if (id) {
     await fetch("/api/binds", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
@@ -139,3 +191,5 @@ document.getElementById("cancel").onclick = () => {
 
 // Charger les traductions au démarrage
 loadTranslations();
+// Charger les catégories au démarrage (pour le select du formulaire)
+loadCategories();

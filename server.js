@@ -13,11 +13,23 @@ const ORIGINAL_CONF = path.resolve(process.env.HOME, ".config/hypr/hyprland.conf
 function readBinds() {
   if (!fs.existsSync(GENERATED_CONF)) return [];
   const lines = fs.readFileSync(GENERATED_CONF, "utf-8").split("\n");
+  let lastCategory = null;
+  let lastName = null;
   return lines
     .map(line => {
+      const catMatch = line.match(/^#\s*category:\s*(\w+)/);
+      if (catMatch) {
+        lastCategory = catMatch[1];
+        return null;
+      }
+      const nameMatch = line.match(/^#\s*name:\s*(.+)/);
+      if (nameMatch) {
+        lastName = nameMatch[1];
+        return null;
+      }
       const match = line.match(/^bind\s*=\s*(.*?),\s*(.*?),\s*(.*?),\s*(.*)$/);
       if (match) {
-        return {
+        const bind = {
           mod: match[1],
           key: match[2],
           action: match[3],
@@ -25,8 +37,12 @@ function readBinds() {
           id: Buffer.from(`${match[1]},${match[2]},${match[3]},${match[4]}`).toString('base64'),
           shortcut: `${match[1]}, ${match[2]}`,
           command: match[4],
-          name: ""
+          name: lastName || "",
+          category: lastCategory || "other"
         };
+        lastCategory = null;
+        lastName = null;
+        return bind;
       }
       return null;
     })
@@ -36,13 +52,18 @@ function readBinds() {
 // Fonction utilitaire pour écrire les binds CRUD
 function writeBinds(binds) {
   const lines = binds.map(b => {
+    // Ajoute la catégorie et le nom en commentaire au-dessus du bind si présents
+    let comments = [];
+    if (b.category) comments.push(`# category: ${b.category}`);
+    if (b.name) comments.push(`# name: ${b.name}`);
+    let commentBlock = comments.length ? comments.join("\n") + "\n" : "";
     if (b.shortcut && b.command) {
       const parts = b.shortcut.split(",").map(s => s.trim());
       const mod = parts[0] || "";
       const key = parts[1] || "";
-      return `bind = ${mod}, ${key}, exec, ${b.command}`;
+      return `${commentBlock}bind = ${mod}, ${key}, exec, ${b.command}`.trim();
     }
-    return `bind = ${b.mod || ""}, ${b.key || ""}, ${b.action || "exec"}, ${b.cmd || ""}`;
+    return `${commentBlock}bind = ${b.mod || ""}, ${b.key || ""}, ${b.action || "exec"}, ${b.cmd || ""}`.trim();
   });
   fs.writeFileSync(GENERATED_CONF, lines.join("\n"));
 }
@@ -63,6 +84,17 @@ function readOriginalBinds() {
     }
   });
   return binds;
+}
+
+const CATEGORIES_FILE = path.resolve(__dirname, "categories.json");
+
+function readCategories() {
+  if (!fs.existsSync(CATEGORIES_FILE)) return [];
+  return JSON.parse(fs.readFileSync(CATEGORIES_FILE, "utf-8"));
+}
+
+function writeCategories(categories) {
+  fs.writeFileSync(CATEGORIES_FILE, JSON.stringify(categories, null, 2));
 }
 
 // Servir fichiers statiques
@@ -132,6 +164,48 @@ const server = http.createServer(async (req, res) => {
     const origBinds = readOriginalBinds();
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify(origBinds));
+    return;
+  }
+
+  // API catégories
+  if (pathname === "/api/categories") {
+    let categories = readCategories();
+    if (method === "GET") {
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify(categories));
+    } else if (method === "POST") {
+      let body = "";
+      req.on("data", chunk => body += chunk);
+      req.on("end", () => {
+        const newCat = JSON.parse(body);
+        categories.push(newCat);
+        writeCategories(categories);
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(newCat));
+      });
+    } else if (method === "PUT") {
+      let body = "";
+      req.on("data", chunk => body += chunk);
+      req.on("end", () => {
+        const updatedCat = JSON.parse(body);
+        categories = categories.map(c => c.id === updatedCat.id ? updatedCat : c);
+        writeCategories(categories);
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(updatedCat));
+      });
+    } else {
+      res.writeHead(405);
+      res.end();
+    }
+    return;
+  }
+  if (pathname.startsWith("/api/categories/") && method === "DELETE") {
+    const id = pathname.split("/").pop();
+    let categories = readCategories();
+    categories = categories.filter(c => c.id !== id);
+    writeCategories(categories);
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ success: true }));
     return;
   }
 

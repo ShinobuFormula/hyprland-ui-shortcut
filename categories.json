@@ -1,0 +1,8 @@
+[
+  { "id": "apps", "emoji": "🌐", "name": "Applications" },
+  { "id": "media", "emoji": "🎵", "name": "Multimédia" },
+  { "id": "windows", "emoji": "🪟", "name": "Fenêtres" },
+  { "id": "workspaces", "emoji": "🗂️", "name": "Workspaces" },
+  { "id": "mouse", "emoji": "🖱️", "name": "Souris" },
+  { "id": "other", "emoji": "🔧", "name": "Autres" }
+]
