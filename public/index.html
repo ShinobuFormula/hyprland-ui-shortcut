@@ -1,30 +1,41 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <title>Hyprland – Nouveau raccourci</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8" />
+<title>Hyprland – Shortcut Manager</title>
+<link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>➕ Nouveau raccourci Hyprland</h1>
 
-  <label>
-    Nom (optionnel)
-    <input id="name" placeholder="Firefox" />
-  </label>
+<!-- Sélecteur de langue en top-right -->
+<div id="lang-container">
+  <select id="lang-select">
+    <option value="fr">🇫🇷 Français</option>
+    <option value="en">🇬🇧 English</option>
+  </select>
+</div>
 
-  <label>
-    Raccourci
-    <input id="shortcut" placeholder="ALT, F" />
-  </label>
+<h1 id="page-title">Hyprland – Gestion des raccourcis</h1>
 
-  <label>
-    Commande(s)
-    <input id="command" placeholder="firefox" />
-  </label>
+<!-- Formulaire CRUD -->
+<form id="bind-form">
+  <input type="hidden" id="bind-id" />
+  <label id="label-name"><span>Nom</span><input id="name" /></label>
+  <label id="label-shortcut"><span>Raccourci</span><input id="shortcut" required /></label>
+  <label id="label-command"><span>Commande(s)</span><input id="command" required /></label>
+  <button type="submit" id="save-btn">Enregistrer</button>
+  <button type="button" id="cancel" style="display:none">Annuler</button>
+</form>
 
-  <button id="save">Créer</button>
+<h2 id="existing-title">Raccourcis existants</h2>
 
-  <script src="script.js"></script>
+<table id="bind-table">
+  <thead>
+    <tr><th>Nom</th><th>Raccourci</th><th>Commande</th><th>Actions</th></tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script src="script.js"></script>
 </body>
 </html>

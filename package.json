@@ -1,0 +1,21 @@
+{
+  "name": "cheatsheet",
+  "version": "1.0.0",
+  "description": "",
+  "main": "generate.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ShinobuFormula/hyprland-ui-shortcut.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ShinobuFormula/hyprland-ui-shortcut/issues"
+  },
+  "homepage": "https://github.com/ShinobuFormula/hyprland-ui-shortcut#readme"
+}

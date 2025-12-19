@@ -1,0 +1,30 @@
+{
+  "fr": {
+    "title": "Hyprland – Gestion des raccourcis",
+    "name": "Nom",
+    "shortcut": "Raccourci",
+    "command": "Commande(s)",
+    "actions": "Actions",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "existing": "Raccourcis existants",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "language": "Langue",
+    "readonly_info": "Lecture seule : modifiez ou supprimez manuellement dans votre .conf. Méthode recommandée : supprimez-le puis réajoutez-le via le Shortcut Manager."
+  },
+  "en": {
+    "title": "Hyprland – Shortcut Manager",
+    "name": "Name",
+    "shortcut": "Shortcut",
+    "command": "Command(s)",
+    "actions": "Actions",
+    "save": "Save",
+    "cancel": "Cancel",
+    "existing": "Existing Shortcuts",
+    "edit": "Edit",
+    "delete": "Delete",
+    "language": "Language",
+    "readonly_info": "Readonly: modify or delete manually in your .conf. Best way: remove it and re-add in Shortcut Manager."
+  }
+}
